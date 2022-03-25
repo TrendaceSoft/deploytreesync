@@ -1,0 +1,333 @@
+
+<div class="control-section" *ngIf='isHeader' (window:resize)="onResize($event)" >
+  <ejs-treegrid 
+  #treegrid [dataSource]='gridData' 
+  id="treegrid"
+  [height]='screenHeight' 
+  isResponsive='true'
+  childMapping='subtasks'
+  [treeColumnIndex]='1' 
+  allowReordering='true' 
+  [allowResizing]='true' 
+  [editSettings]='editSettings'
+  [selectionSettings]='selectionOptions' 
+  [showColumnChooser]='true' 
+  [columns]= 'headerName'
+  [enableVirtualization]="true"
+  
+  (actionComplete)='actionComplete($event)'
+  (rowDrop)='rowDrop($event)'
+  (columnDrop)='columnDrop($event)'
+  (resizeStop)='resizeStop($event)'
+  (queryCellInfo)='CustomizeCell($event)'
+  enablePersistance = 'true'
+  (dataBound)="dataBound($event)" 
+  >
+
+  </ejs-treegrid>
+
+  <ejs-contextmenu 
+  #contextmenu
+  id="contextmenu" 
+  target=".e-grid" 
+  [items]="menuItems"
+  (beforeItemRender)="ContextMenuItemRender($event)" 
+  (beforeOpen)="ContextMenuBeforeOpen($event)"
+  (select)="ContextMenuClick($event)"
+  >
+  </ejs-contextmenu>
+
+  <!-- edit column -->
+  <ejs-dialog 
+  #dialog 
+  [buttons]='alertDlgButtons' 
+  [visible]='visible' 
+  width='330px'
+  header='Edit column'
+  isModal='true'
+  showCloseIcon='true'
+  [animationSettings]='animationSettings' 
+  (beforeClose)="editDialogBeforeClose($event)" >
+
+    <ng-template #content>
+
+      <label for="input" style="font-size: 11px; color: #000000a1;">Column name</label>
+      <input id="input" #input style="margin-bottom: 15px;" class="e-input" type="text" value={{columnHeaderName}} placeholder="Enter column name" (input)="changeHeader($event)"/>
+      <span *ngIf= "isColumnName" style="display: block; font-size: 12px; color: red; margin-bottom: 7px;">Column name required</span>
+      <span *ngIf= "isOtherColumnName" style="display: block; font-size: 12px; color: red; margin-bottom: 7px;">Column name exist</span>
+
+      <!-- <input id="submit" #submit class="inputBox" type="submit" value="Confirm" (click)="changeHeader()" /><br><br> -->
+
+      <label style="font-size: 11px; color: #000000a1;" >Data type</label>
+      <ejs-dropdownlist style="margin-bottom: 15px;"  [dataSource]='dataType' [(value)]='colDataType' (select)="dropDownSelect($event)"></ejs-dropdownlist>
+
+      <div *ngIf="colDataType != 'DropDownList' ">
+
+        <label style="font-size: 11px; color: #000000a1;" >Default value</label>
+
+        <input id="editInput" *ngIf="colDataType == 'Text' " type="text" [(value)]='editColumnForm.defaultValue' (input)="editInputChange($event)" style="margin-bottom: 15px;" class="e-input"  placeholder="" />
+        <input *ngIf="colDataType =='Number' "  type="number" [(value)]='editColumnForm.defaultValue' (input)="editInputChange($event)" style="margin-bottom: 15px;" class="e-input"  placeholder=""/>
+
+        <ejs-datepicker *ngIf="colDataType =='Date' " [(value)]='editColumnForm.defaultValue' (change)="editInputChange($event)" ></ejs-datepicker>
+      
+        <ejs-dropdownlist *ngIf="colDataType =='Boolean' "
+        [(value)]='editColumnForm.defaultValue'
+        [dataSource]='[true,false]' (change)="editInputChange($event)"></ejs-dropdownlist>
+
+      </div>
+
+      <div *ngIf="editColumnForm.defaultValue == null ">
+        <p style="font-size: 12px; color: red; margin: 0;">Default value required</p>
+      </div>
+
+      <div *ngIf="colDataType == 'DropDownList' ">
+        <div class="input-container" *ngFor="let list of editColumnForm.defaultValue; let i = index">
+          <input id="item{{i}}" type="text" class="e-input" style="width: 50%;"[(value)]= list.item (input)="editDDL(i, $event)" />
+          <button style="border: none; background: none; text-align: left; width: 50%;">
+            <img (click)="deleteEditDDL(i)" src="../assets/garbage.png" style="width: 10%; height: auto; position: relative; top: 5px; cursor: pointer;"/>
+          </button>
+          <div *ngIf="editColumnForm.defaultValue[i]['item'] == null || editColumnForm.defaultValue[i]['item'] == ''" style=" flex-basis: 100%;">
+            <p style="font-size: 12px; color: red; margin: 0;">Item required</p>
+          </div>
+        </div>
+
+        <div>
+          <button style="border: none; background: none; text-align: left;">
+            <img (click)="addEditDDL()" src="../assets/add.png" style="width: 8%; height: auto; cursor: pointer;"/>
+            <span style="position: relative; top: -7px; margin: 0px 5px;">Add list</span>
+          </button>
+        </div> 
+
+        <div *ngIf="editColumnForm.defaultValue.length == 0">
+          <p style="font-size: 12px; color: red; margin: 0;">Drop down list required</p>
+        </div>
+
+      </div>
+
+
+      <label style="font-size: 11px; color: #000000a1;" >Minimum Column Width</label>
+      <ejs-dropdownlist style="margin-bottom: 15px;" [dataSource]='minColWidth' [(value)]='colMinWidth' (select)="dropDownSelect($event)"></ejs-dropdownlist>
+      
+      <label style="font-size: 11px; color: #000000a1;" >Font size</label>
+      <ejs-dropdownlist style="margin-bottom: 15px;" [dataSource]='fontSize' [(value)]='colFontSize' (select)="dropDownSelect($event)"></ejs-dropdownlist>
+
+      <label style="font-size: 11px; color: #000000a1;" >Font color</label>
+      <ejs-dropdownlist style="margin-bottom: 15px;" [dataSource]='fontColor' [(value)]='colFontColor' (select)="dropDownSelect($event)"></ejs-dropdownlist>
+      
+      <label style="font-size: 11px; color: #000000a1;" >Background color</label>
+      <ejs-dropdownlist style="margin-bottom: 15px;" [dataSource]='backgroundColor' [(value)]='colbgColor' (select)="dropDownSelect($event)"></ejs-dropdownlist>
+
+      <label style="font-size: 11px; color: #000000a1;" >Alignment</label>
+      <ejs-dropdownlist style="margin-bottom: 15px;"  [dataSource]='alignment' [(value)]='colAlignment' (select)="dropDownSelect($event)"></ejs-dropdownlist>
+      
+      <ejs-checkbox class="custom" #textWrap id='textWrap' [(checked)]='isChecked' label="Text-wrap" (change)="checkBox($event)"></ejs-checkbox>
+    </ng-template>
+  </ejs-dialog>
+
+<!-- new column -->
+  <ejs-dialog 
+  #dialog2 
+  [buttons]='alertDlgButtons2' 
+  [visible]='visible2' 
+  width='330px'
+  isModal='true'
+  showCloseIcon='true'
+  [animationSettings]='animationSettings' 
+  (beforeClose)="newColDialogBeforeClose($event)" >
+
+    <form [formGroup]="newColForm" (ngSubmit)="addColumn()" >
+
+      <ng-template #header>
+        <div style="text-transform: capitalize; color: white;">Add NewCol</div>
+      </ng-template>
+
+      <ng-template #content> 
+          <div class="form-group">
+            <label for="name" style="font-size: 11px; color: #000000a1;">Column name</label>
+            <input id="name" #name formControlName="colName" class="e-input" type="text" placeholder="Column name" (input)="newColNameExist($event)"/>
+          </div>
+          <div *ngIf="(colName.invalid) && (colName.dirty || colName.touched)">
+              <div *ngIf="colName.errors['required']">
+                  <p style="font-size: 12px; color: red; margin: 0;">Column name required</p>
+              </div>
+          </div>
+          <div *ngIf="isNewColNameRepeat">
+            <p style="font-size: 12px; color: red; margin: 0;">Column name exist</p>
+          </div>
+      
+          <div class="form-group" style="margin-top: 15px;">
+            <label style="font-size: 11px; color: #000000a1;" >Data type</label>
+            <ejs-dropdownlist formControlName="columnDataType"  [dataSource]='dataType' (change)="dataTypeOnChange($event)"></ejs-dropdownlist>    
+          </div>
+          <div *ngIf="(columnDataType.invalid) && (columnDataType.dirty || columnDataType.touched)">
+              <div *ngIf="columnDataType.errors['required']">
+                  <p style="font-size: 12px; color: red; margin: 0;">Data type required</p>
+              </div>
+          </div>
+
+
+
+
+          <div *ngIf="newColForm.controls.columnDataType.valid" class="form-group" style="margin-top: 15px;">
+            <label style="font-size: 11px; color: #000000a1;" >Default-Value</label>
+
+            <input *ngIf="newColForm.value.columnDataType =='Text' "    type="text" formControlName="defaultValue" class="e-input" placeholder=""  />
+            <input *ngIf="newColForm.value.columnDataType =='Number' "  type="number" formControlName="defaultValue" class="e-input" placeholder="" />
+            <!-- <input *ngIf="newColForm.value.columnDataType =='Date' "    type="date" formControlName="defaultValue" class="e-input" placeholder="" /> -->
+            <ejs-datepicker *ngIf="newColForm.value.columnDataType =='Date' " formControlName="defaultValue"></ejs-datepicker>
+            <ejs-dropdownlist *ngIf="newColForm.value.columnDataType =='Boolean' "
+            formControlName="defaultValue" 
+            [dataSource]='[true,false]' ></ejs-dropdownlist>
+
+            <!-- <input *ngIf="newColForm.value.columnDataType =='DropDownList' " type="text" formControlName="defaultValue" class="e-input" type="text" placeholder="" /> -->
+
+            <div *ngIf="newColForm.value.columnDataType =='DropDownList' " >
+              <div class="input-container" *ngFor="let addressGroup of list;let i = index" [formGroup]="addressGroup">
+                <!-- <label for="item{{i}}" style="position: relative; top: 15px; margin-right: 10px;">Item{{i+1}} </label> -->
+                <input id="item{{i}}" formControlName="item" type="text" class="e-input" style="width: 50%;"/>
+                <button style="border: none; background: none; text-align: left; width: 50%;">
+                  <img (click)="deleteListItem(i)" src="../assets/garbage.png" style="width: 10%; height: auto; position: relative; top: 5px; cursor: pointer;"/>
+                </button>
+                <div *ngIf="newColForm.value.listItem[i]['item'] == null || newColForm.value.listItem[i]['item'] == ''" style=" flex-basis: 100%;">
+                  <p style="font-size: 12px; color: red; margin: 0;">Item required</p>
+                </div>
+              </div>
+              <div>
+                <button (click)="addNewListItem()" style="border: none; background: none; text-align: left;">
+                  <img src="../assets/add.png" style="width: 8%; height: auto; cursor: pointer;"/>
+                  <span style="position: relative; top: -7px; margin: 0px 5px; cursor: pointer;">Add list</span>
+                </button>
+              </div>  
+
+              <!-- <div *ngIf="(item.invalid) && (item.dirty || item.touched)"> -->
+                <div *ngIf="newColForm.value.listItem.length == 0">
+                    <p style="font-size: 12px; color: red; margin: 0;">Drop down list required</p>
+                </div>
+              <!-- </div>  -->
+
+            </div>
+
+
+          </div>
+          <div *ngIf="(defaultValue.invalid) && (defaultValue.dirty || defaultValue.touched)">
+              <div *ngIf="defaultValue.errors['required']">
+                  <p style="font-size: 12px; color: red; margin: 0;">Data type required</p>
+              </div>
+          </div> 
+
+          
+          
+
+          <div class="form-group" style="margin-top: 15px;">
+            <label style="font-size: 11px; color: #000000a1;" >Minimum Column Width</label>
+            <ejs-dropdownlist formControlName="columnMinWidth" [dataSource]='minColWidth' ></ejs-dropdownlist>        
+          </div>
+          <div *ngIf="(columnMinWidth.invalid) && (columnMinWidth.dirty || columnMinWidth.touched)">
+            <div *ngIf="columnMinWidth.errors['required']">
+                <p style="font-size: 12px; color: red; margin: 0;">Data type required</p>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 15px;">
+            <label style="font-size: 11px; color: #000000a1;" >Font size</label>
+            <ejs-dropdownlist formControlName="columnFontSize" [dataSource]='fontSize'></ejs-dropdownlist>
+          </div>
+          <div *ngIf="(columnFontSize.invalid) && (columnFontSize.dirty || columnFontSize.touched)">
+            <div *ngIf="columnFontSize.errors['required']">
+                <p style="font-size: 12px; color: red; margin: 0;">Font size required</p>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 15px;">
+            <label style="font-size: 11px; color: #000000a1;" >Font color</label>
+            <ejs-dropdownlist formControlName="columnFontColor" [dataSource]='fontColor' ></ejs-dropdownlist>
+          </div>
+          <div *ngIf="(columnFontColor.invalid) && (columnFontColor.dirty || columnFontColor.touched)">
+            <div *ngIf="columnFontColor.errors['required']">
+                <p style="font-size: 12px; color: red; margin: 0;">Font color required</p>
+            </div>
+          </div>
+          
+          <div class="form-group" style="margin-top: 15px;">
+            <label style="font-size: 11px; color: #000000a1;" >Background color</label>
+            <ejs-dropdownlist formControlName="columnBgColor" [dataSource]='backgroundColor' ></ejs-dropdownlist>
+          </div>
+          <div *ngIf="(columnBgColor.invalid) && (columnBgColor.dirty || columnBgColor.touched)">
+            <div *ngIf="columnBgColor.errors['required']">
+                <p style="font-size: 12px; color: red; margin: 0;">Background color required</p>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 15px;">
+            <label style="font-size: 11px; color: #000000a1;" >Alignment</label>
+            <ejs-dropdownlist formControlName="columnAlignment"  [dataSource]='alignment' ></ejs-dropdownlist>
+          </div>
+          <div *ngIf="(columnAlignment.invalid) && (columnAlignment.dirty || columnAlignment.touched)">
+            <div *ngIf="columnAlignment.errors['required']">
+                <p style="font-size: 12px; color: red; margin: 0;">Alignment required</p>
+            </div>
+          </div>
+
+          <div class="form-group" style="margin-top: 15px;">
+            <ejs-checkbox formControlName="columnTextWrap" class="custom" #textWrap id='textWrap' label="Text-wrap" ></ejs-checkbox>
+          </div>
+
+
+      </ng-template>
+
+      <ng-template #footerTemplate>
+        <!-- <button type="submit" (click) = "addColumn()" class="e-control e-btn e-lib e-flat e-primary">Save</button> -->
+
+          <!-- <button type="submit" [disabled]="!newColForm.valid" (click) = "addColumn()" class="e-control e-btn e-lib e-flat e-primary">Save</button> -->
+          <button type="submit" [disabled]="!isFromValid" (click) = "addColumn()" class="e-control e-btn e-lib e-flat e-primary">Save</button>
+          <button type="button" (click) = "closeAddColumn()" class="e-control e-btn e-lib e-flat">Cancel</button>
+      </ng-template>
+    </form>
+  </ejs-dialog>
+
+<!-- delete column -->
+  <ejs-dialog 
+  #dialog3 
+  [buttons]='alertDlgButtons3' 
+  [visible]='visible3' 
+  width='330px'
+  isModal='true'
+  showCloseIcon='true'
+  [animationSettings]='animationSettings' 
+  style="border-radius: 10px;"
+  >
+  
+    <ng-template #header>
+      <div style="text-transform: capitalize; color: white;">Delete column </div>
+    </ng-template>
+
+    <ng-template #content>
+      <label>Are you sure want to delete column?</label>
+    </ng-template>
+  </ejs-dialog>
+
+<!-- delete row -->
+  <ejs-dialog 
+  #dialog4 
+  [buttons]='alertDlgButtons4' 
+  [visible]='visible4' 
+  width='330px'
+ 
+  isModal='true'
+  showCloseIcon='true'
+  [animationSettings]='animationSettings' 
+  style="border-radius: 10px;"
+  >
+    <ng-template #header>
+      <div style="text-transform: capitalize; color: white;">Delete row</div>
+    </ng-template>
+    <ng-template #content>
+      <label>Are you sure want to delete row?</label>
+    </ng-template>
+  </ejs-dialog>
+
+</div>
+
+<div id="container" style="position: absolute;top: 47% !important;left: 50%;"></div>
+
+

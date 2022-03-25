@@ -1,0 +1,126 @@
+@import "../node_modules/@syncfusion/ej2-base/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-buttons/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-calendars/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-dropdowns/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-inputs/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-navigations/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-popups/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-grids/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-treegrid/styles/material.css";
+
+@import "../node_modules/@syncfusion/ej2-base/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-buttons/styles/material.css";
+
+@import "../node_modules/@syncfusion/ej2-base/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-buttons/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-popups/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css";
+
+.textTransform {
+    text-transform: none;
+}
+.e-selectionbackground.e-newcolor {
+    background-color: pink !important;
+}
+
+.inputBox {
+    background-color: #00000059;
+    color: white;
+    outline: none;
+    border: none;
+    /* border-radius: 5px; */
+    height: 25px;
+    width: 100%;
+}
+.inputBox:hover {
+    background-color: #00000045;
+}
+
+.e-input:focus:not(.e-success):not(.e-warning):not(.e-error) {
+    border-bottom: 1px solid #00000059;
+}
+
+.e-popup.e-popup-open.e-dialog {
+    max-height: 400px !important;
+}
+
+.e-checkbox-wrapper .e-frame,
+.e-checkbox-wrapper:hover .e-frame {
+    border: 2px solid #00000059;
+    color: #00000059;
+}
+.e-checkbox-wrapper .e-label,
+.e-checkbox-wrapper:hover .e-label {
+    /* color: #e3165b; */
+    font-size: 14px;
+    font-weight: 100;
+}
+
+.e-checkbox-wrapper .e-frame.e-check {
+    background-color: #00000059;
+}
+
+.e-treegrid .e-headercell {
+    /* background-color: #2382c3; */
+    background-color: #e3165b;
+    color: white;
+}
+
+.e-treegrid .e-row {
+    height: 40px;
+    /* background: #f7f7f7; */
+    background-color: white;
+}
+
+.e-dialog {
+    border-radius: 10px;
+    height: auto !important;
+}
+
+.e-dialog .e-dlg-header-content {
+    /* background: #d9edf7; */
+    /* background: #c8ff0099; */
+    background: #e3165b;
+    border-radius: 10px 10px 0 0;
+    margin-bottom: 10px;
+}
+
+.e-dialog .e-dlg-content {
+    padding: 18px !important;
+    /* height: 60px; */
+    margin: 0px 0px;
+}
+
+.e-dialog .e-footer-content {
+    border-top: 1px solid #e6e6e6;
+    background: #f8f8f8;
+    border-radius: 0px 0px 10px 10px;
+}
+
+.e-dragclonerow {
+    font-family: fantasy;
+}
+/* .e-dialog .e-dlg-header { */
+.e-dlg-header {
+    color: white;
+}
+.e-btn .e-btn-icon {
+    color: white;
+}
+
+.input-container {
+    display: -ms-flexbox; /* IE10 */
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-bottom: 15px;
+    margin-left: 10px;
+}
+
+@media (max-width: 720px) {
+    .e-popup.e-popup-open.e-dialog {
+        width: 250px !important;
+        max-height: 300px !important;
+    }
+}

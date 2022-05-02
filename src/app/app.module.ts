@@ -6,6 +6,7 @@ import { DropDownButtonModule } from '@syncfusion/ej2-angular-splitbuttons';
 import { DatePickerModule } from '@syncfusion/ej2-angular-calendars';
 import { DropDownListModule } from '@syncfusion/ej2-angular-dropdowns';
 import { ReactiveFormsModule } from '@angular/forms';
+import { PageService, SortService, FilterService } from '@syncfusion/ej2-angular-treegrid';
 
 
 
@@ -36,7 +37,7 @@ import { HttpClientModule } from '@angular/common/http';
       DatePickerModule,
      
     ],
-    providers: [],
+    providers: [PageService, SortService, FilterService],
     bootstrap: [AppComponent]
   })
 export class AppModule { }

@@ -14,6 +14,7 @@ import {
   ToolbarService,
   SortService,
   FreezeService,
+  FilterService,
   VirtualScrollService,
 } from '@syncfusion/ej2-angular-treegrid';
 import {

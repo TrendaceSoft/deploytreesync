@@ -21,9 +21,9 @@ export class HttpService {
    * prod test run
    */
 
-  // basePath: string = 'http://103.104.48.64:84/user/';
-  // headerBasePath: string = "http://103.104.48.64:84/gridheader/";
-  // gridPropertyBasePath: string = "http://103.104.48.64:84/treegridproperty/";
+  //basePath: string = 'http://103.104.48.64:84/user/';
+  //headerBasePath: string = "http://103.104.48.64:84/gridheader/";
+  //gridPropertyBasePath: string = "http://103.104.48.64:84/treegridproperty/";
 
 
   /**
